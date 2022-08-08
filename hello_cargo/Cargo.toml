@@ -1,12 +1,8 @@
 [package]
-name = "rust-project"
+name = "hello_cargo"
 version = "0.1.0"
-authors = ["Minh Vu <minhd_vu@yahoo.com>"]
-edition = "2018"
+edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-# rocket = "0.4.7"
-# sdl2 = "0.34.5"
-bevy = "0.5"
