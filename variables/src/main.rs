@@ -19,4 +19,22 @@ fn main() {
         println!("The value of x in the inner scope is: {x}");
     }
     println!("The value of x is: {x}");
+
+    // Default floating point number is f64.
+    let y = 2.0;
+
+    // Chars are denoted with single quotes and are four bytes in size (unicode).
+    let heart_eyed_cat = '😻';
+
+    // Tuples are fixed length and variable types.
+    let tup: (i32, f64, u8) = (500, 6.4, 1);
+    // To destructure a tuple.
+    let (x, y, z) = tup;
+    // To access a single value of the tuple.
+    let six_point_four = tup.1;
+
+    // Arrays have fixed length and the same type.
+    // let name: [type; size] = ...;
+    let a: [i32; 5] = [1, 2, 3, 4, 5];
+    let a = [3; 5] == [3, 3, 3, 3, 3];
 }
