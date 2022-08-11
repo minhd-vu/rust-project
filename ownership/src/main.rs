@@ -44,3 +44,9 @@ fn no_dangle() -> String {
 
     s // If this was &s, it would cause a dangling pointer.
 }
+
+fn slices() {
+    // A slice is a reference to part of a string. Slices are references that point to a part of a
+    // underlying string literal with a length. Strings have both a length and capacity. &str
+    // represents a string slice. String literals are slices.
+}
