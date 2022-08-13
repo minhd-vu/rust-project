@@ -37,4 +37,8 @@ fn main() {
     // let name: [type; size] = ...;
     let a: [i32; 5] = [1, 2, 3, 4, 5];
     let a = [3; 5] == [3, 3, 3, 3, 3];
+
+    // This is the tuple unit, it represents an empty value or empty return type.
+    // Expressions implicitly return the unit.
+    let a = ();
 }
