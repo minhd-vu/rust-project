@@ -31,8 +31,8 @@ fn main() {
             Self {
                 wheels: 4,
                 doors: 4,
-                model: "Prius",
-                manufacturer: "Toyota",
+                model: String::from("Prius"),
+                manufacturer: String::from("Toyota"),
             }
         }
     }
