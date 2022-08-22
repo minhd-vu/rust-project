@@ -1,7 +1,9 @@
 // Items that are not in the rust prelude must be imported in explicitly.
 use rand::Rng;
-use std::cmp::Ordering;
-use std::io;
+// use std::cmp::Ordering;
+// use std::io;
+// Another way to condense imports.
+use std::{cmp::Ordering, io};
 
 // Function definition, main is the entry point of the program.
 fn main() {
