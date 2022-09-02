@@ -1,3 +1,6 @@
+// If we moved what is inside the curly braces into another file, then this would become a module
+// load, however you only need to do this once in the module tree. The mod keyword is unlike the
+// include from other programming languages.
 mod my_module {
     pub struct MyStruct {
 
