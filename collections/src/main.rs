@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 fn main() {
     // Create a new empty vector. Here rust doesn't know what type we want the empty vector to have
     // so we must give it a type annotation.
@@ -33,7 +35,7 @@ fn main() {
     // Using the + operator on strings without the & will move the string.
     let s1 = String::from("Hello");
     let s2 = String::from("Hi");
-    // Here we require an owned string on the left, so s1 will be moved while s2 is not. Here, the
+    // Here we require an owned string on the left, so s1 will be moved whilets2 is not. Here, the
     // compiler actually coerces the type of s2 into a &str from a &String.
     let s3 = s1 + &s2;
     // For more complicated string concatenation, use the format macro.
@@ -46,4 +48,19 @@ fn main() {
     for c in s.chars() {
         println!("{}", c);
     }
+
+    // Hash maps store mappings of keys to values. To create a HashMap use the new method.
+    let mut map = HashMap::new();
+    // To insert values into the hash map use the insert method. Inserting will move values with
+    // the Copy trait. Inserting will replace the value if it alerady exists.
+    map.insert(String::from("Hello"), String::from("World"));
+    // Get a value from the hash map by using the get method.
+    let value = map.get("Hello");
+    // To iterate over a map use the in keyword.
+    for (k, v) in &map {
+        println!("{}: {}", k , v);
+    }
+    // The entry method returns an Entry enum which represents whether the value may or may not
+    // exist.
+    let entry = map.entry(String::from("Hello"));
 }
