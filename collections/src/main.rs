@@ -58,9 +58,26 @@ fn main() {
     let value = map.get("Hello");
     // To iterate over a map use the in keyword.
     for (k, v) in &map {
-        println!("{}: {}", k , v);
+        println!("{}: {}", k, v);
     }
     // The entry method returns an Entry enum which represents whether the value may or may not
     // exist.
     let entry = map.entry(String::from("Hello"));
+}
+
+fn get_median(nums: &[i32]) -> i32 {
+    let mut vec = nums.to_vec();
+    vec.sort();
+    vec[vec.len() / 2]
+}
+
+fn get_mode(nums: &[i32]) -> i32 {
+    let mut map = HashMap::new();
+    for &n in nums {
+        *map.entry(n).or_insert(0) += 1;
+    }
+    map.iter()
+        .max_by_key(|&(_, v)| v)
+        .map(|(k, _)| *k)
+        .expect("failed to compute mode")
 }
