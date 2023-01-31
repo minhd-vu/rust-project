@@ -2,6 +2,8 @@ pub fn add(left: usize, right: usize) -> usize {
     left + right
 }
 
+// By default Rust runs tests in parallel. Rust doesn't show output of tests that
+// pass.
 #[cfg(test)]
 mod tests {
     // This allows anything in the outer module to be available in the test module.
@@ -34,9 +36,10 @@ mod tests {
     }
 
     #[test]
-
     // Tests can be written to use Result<T, E> to return an err instead of
     // panicking.
+    #[ignore]
+    // You can also ignore a test to prevent it being ran by cargo test.
     fn result_test() -> Result<(), String> {
         if 2 + 2 == 4 {
             Ok(())
