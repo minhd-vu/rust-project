@@ -3,7 +3,9 @@ pub fn add(left: usize, right: usize) -> usize {
 }
 
 // By default Rust runs tests in parallel. Rust doesn't show output of tests that
-// pass.
+// pass. This indicates that this code will only be compiled when running cargo
+// test and not something like cargo build. Rust allows private functions to be
+// tested.
 #[cfg(test)]
 mod tests {
     // This allows anything in the outer module to be available in the test module.
