@@ -6,7 +6,7 @@ use std::{env, process};
 fn main() {
     let args: Vec<String> = env::args().collect();
     let config = Config::new(&args).unwrap_or_else(|err| {
-        println!("Problem parsing arguments: {err}");
+        eprintln!("Problem parsing arguments: {err}");
         process::exit(1);
     });
 
@@ -18,7 +18,7 @@ fn main() {
     // We don't use unwrap_or_else here because we don't care about the Ok
     // return value of run, only the error.
     if let Err(e) = run(config) {
-        println!("Application error: {e}");
+        eprintln!("Application error: {e}");
         process::exit(1);
     }
 }
