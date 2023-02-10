@@ -1,4 +1,8 @@
-use std::{env, error::Error, fs};
+use std::{
+    env::{self, Args},
+    error::Error,
+    fs,
+};
 
 pub struct Config {
     pub query: String,
@@ -7,15 +11,23 @@ pub struct Config {
 }
 
 impl Config {
-    // new handles the parsing of the command line arguments into data.
-    pub fn new(args: &[String]) -> Result<Config, &'static str> {
-        if args.len() < 3 {
-            // We have to use return here.
-            return Err("not enough arguments");
-        }
+    // New handles the parsing of the command line arguments into data.
+    //
+    // We originally had to use clone on the args because we didn't have ownership
+    // of the args variable, but we can take ownership of the iterator.
+    pub fn new(mut args: impl Iterator<Item = String>) -> Result<Config, &'static str> {
+        args.next();
 
-        let query = args[1].clone();
-        let file_path = args[2].clone();
+        let query = match args.next() {
+            Some(arg) => arg,
+            None => return Err("no query string"),
+        };
+
+        let file_path = match args.next() {
+            Some(arg) => arg,
+            None => return Err("no file path"),
+        };
+
         // Check if the environment variable is set.
         let ignore_case = env::var("IGNORE_CASE").is_ok();
 
@@ -51,29 +63,18 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
 // returned by search will live as long as the data in the argument contents
 // (not query!)
 fn search_case_sensitive<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
-    let mut matches = Vec::new();
-    for line in contents.lines() {
-        if line.contains(query) {
-            matches.push(line);
-        }
-    }
-
-    matches
+    contents
+        .lines()
+        .filter(|line| line.contains(query))
+        .collect()
 }
 
 fn search_case_insensitive<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
     let query = query.to_lowercase();
-    let mut matches = Vec::new();
-
-    for line in contents.lines() {
-        // Because to_lowercase() produces a new string, we have to pass a
-        // reference to contains now.
-        if line.to_lowercase().contains(&query) {
-            matches.push(line);
-        }
-    }
-
-    matches
+    contents
+        .lines()
+        .filter(|line| line.to_lowercase().contains(&query))
+        .collect()
 }
 
 #[cfg(test)]

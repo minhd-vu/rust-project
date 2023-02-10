@@ -4,8 +4,9 @@ use std::{env, process};
 // The main function should only handle argument parsing, config setup, calling
 // run, and handling errors from run.
 fn main() {
-    let args: Vec<String> = env::args().collect();
-    let config = Config::new(&args).unwrap_or_else(|err| {
+    // Not longer collect args and just pass the iterator into Config::new.
+    // let args: Vec<String> = env::args().collect();
+    let config = Config::new(env::args()).unwrap_or_else(|err| {
         eprintln!("Problem parsing arguments: {err}");
         process::exit(1);
     });
