@@ -122,6 +122,8 @@ fn ownership_closure() {
 // Fn: applies to closures that don't mutate or move captured values and can be
 // called more than once without mutating the environment.
 //
+// Iterators are a zero-cost abstraction. Rust will unroll iterators at compile
+// time down to loops.
 
 fn iterators() {
     let v1 = vec![1, 2, 3];
