@@ -121,3 +121,56 @@ fn ownership_closure() {
 // captured values and can be called more than once.
 // Fn: applies to closures that don't mutate or move captured values and can be
 // called more than once without mutating the environment.
+//
+
+fn iterators() {
+    let v1 = vec![1, 2, 3];
+    // We store the iterator in the v1_iter variable. At this point the code
+    // doesn't really do anything.
+    let v1_iter = v1.iter();
+
+    // Iterators allow us to iterate using loops. All iterators implement a trait
+    // that has the next() function. What the for loop does is just call the next()
+    // function of the iterator.
+    for val in v1_iter {
+        println!("Got: {}", val);
+    }
+}
+
+#[test]
+fn iterator_demo() {
+    let v1 = vec![1, 2, 3];
+    // The iterator must be mutable as calling next() will consume the value.
+    let mut v1_iter = v1.iter();
+
+    assert_eq!(v1_iter.next(), Some(&1));
+    assert_eq!(v1_iter.next(), Some(&2));
+    assert_eq!(v1_iter.next(), Some(&3));
+    assert_eq!(v1_iter.next(), None);
+}
+
+fn iterator_sum() {
+    let v1 = vec![1, 2, 3];
+    let mut v1_iter = v1.iter();
+    let sum: i32 = v1_iter.sum();
+    // At this point you can't use v1_iter anymore because it has been consumed
+    // by sum();
+}
+
+fn iterator_map() {
+    let v1 = vec![1, 2, 3];
+    // Map is one method that produces another iterator. Unless the iterator has
+    // a collect method, it won't do anything, it must be consumed to do something.
+    let v2: Vec<_> = v1.iter().map(|x| x + 1).collect();
+}
+
+#[derive(PartialEq, Debug)]
+struct Shoe {
+    size: u32,
+    style: String,
+}
+
+// Here we have a closure that captures its environment (shoe_size) in an iterator.
+fn shoes_in_size(shoes: Vec<Shoe>, shoe_size: u32) -> Vec<Shoe> {
+    shoes.into_iter().filter(|s| s.size == shoe_size).collect()
+}
