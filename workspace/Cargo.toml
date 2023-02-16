@@ -1,0 +1,8 @@
+# Instead of a package Cargo.toml, we use a workspace definition.
+[workspace]
+
+# members describes the packages that will be inside this workspace.
+members = ["adder", "add_one"]
+
+# to run a specific binary crate, use the cargo run -p option.
+# crates in a workspace will have to be published separately.
