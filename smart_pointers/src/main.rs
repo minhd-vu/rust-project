@@ -107,3 +107,27 @@ fn deref_coercion() {
 
     // You can also use the DerefMut trait for dereference mutable references.
 }
+
+use std::rc::Rc;
+enum RcList {
+    Cons(i32, Rc<RcList>),
+    Nil,
+}
+
+fn rc_example() {
+    // Rc can only be used to share references in single threaded scenarios. If
+    // we were to use a Box<RcList> instead of a Rc<RcList> then a move error
+    // would show up. This allows b and c to both point to a.
+    let a = Rc::new(RcList::Cons(
+        5,
+        Rc::new(RcList::Cons(10, Rc::new(RcList::Nil))),
+    ));
+    // a.clone() is different than Rc::clone because Rc::clone only increments
+    // the reference counter. Once the variable goes out of scope, the reference
+    // count will be decremented with the Drop trait. We can use Rc::strong_count
+    // and Rc::weak_count to get the number of references. Rc allows a single
+    // value to have multiple owners and only be cleaned up when no more owners
+    // are left.
+    let b = RcList::Cons(3, Rc::clone(&a));
+    let c = RcList::Cons(4, Rc::clone(&a));
+}
