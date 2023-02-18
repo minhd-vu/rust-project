@@ -48,6 +48,10 @@ fn deref_example() {
     // If we try the below without implementing the deref trait, it won't compile
     // because the rust will not know how to dereference MyBox.
     assert_eq!(5, *y);
+    // We can't do something like y.drop() because rust will still call drop at
+    // when y goes out of scope, causing a double free. The way to drop something
+    // early would be:
+    drop(y)
 }
 
 enum List {
@@ -75,6 +79,13 @@ impl<T> Deref for MyBox<T> {
     fn deref(&self) -> &Self::Target {
         // This will return the first value in the tuple struct.
         &self.0
+    }
+}
+
+impl<T> Drop for MyBox<T> {
+    // This will be called when MyBox goes out of scope.
+    fn drop(&mut self) {
+        println!("Dropping MyBox");
     }
 }
 
