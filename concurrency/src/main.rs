@@ -1,10 +1,16 @@
-use std::{sync::mpsc, thread, time::Duration};
+use std::{
+    sync::{mpsc, Arc, Mutex},
+    thread,
+    time::Duration,
+};
 
 fn main() {
     // After calling, notice that all the threads will shutdown, regardless of
     // whether they completed or not.
     create_new_thread();
     message_passing();
+    shared_state();
+    shared_mutex();
 }
 
 fn create_new_thread() {
@@ -91,4 +97,48 @@ fn message_passing() {
     for received in rx {
         println!("Got: {}", received);
     }
+}
+
+fn shared_state() {
+    // Because of rust's type system, you can't get locking and unlocking mutexes
+    // wrong.
+    let m = Mutex::new(5);
+
+    {
+        // You can only access the value stored in the mutex if the you have
+        // acquired the lock by calling the lock() function. The MutexGuard
+        // returned implements the Drop and Deref traits, so we don't forget to
+        // unlock the mutex.
+        let mut num = m.lock().unwrap();
+        *num = 6;
+    }
+
+    println!("m = {:?}", m);
+}
+
+fn shared_mutex() {
+    // Arc is the same as Rc just that it is thread safe. It stands for atomic
+    // reference counter. But this come with a performance penalty.
+    let counter = Arc::new(Mutex::new(0));
+    let mut handles = vec![];
+
+    for _ in 0..10 {
+        // We can't move the ownership of counter into multiple threads. Unless
+        // we use Rc. Even then Rc cannot be used in multithreaded scenarios
+        // because it cannot be sent safely.
+        let counter = Arc::clone(&counter);
+        let handle = thread::spawn(move || {
+            let mut num = counter.lock().unwrap();
+            *num += 1;
+        });
+        handles.push(handle);
+    }
+
+    for handle in handles {
+        handle.join().unwrap();
+    }
+
+    println!("Result: {}", *counter.lock().unwrap());
+    // There are also atomic primitive types so you don't have to use a mutex.
+    // Also, using mutex comes with the risk of creating deadlocks.
 }
