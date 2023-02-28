@@ -142,3 +142,12 @@ fn shared_mutex() {
     // There are also atomic primitive types so you don't have to use a mutex.
     // Also, using mutex comes with the risk of creating deadlocks.
 }
+
+fn sync_and_send() {
+    // Rust has few concurrency features, but some of the ones that are embedded
+    // in the language are the Sync and Send traits.
+    // The Send trait indicates that the ownership of values implementing Send
+    // can be transferred across threads.
+    // The Sync trait indicates that the type implementing Sync can be referenced
+    // from multiple threads.
+}
