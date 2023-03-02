@@ -1,3 +1,5 @@
+use oop::Post;
+
 fn main() {
     // Some consider objects something that packages both data and procedures to
     // operate on that data object oriented. Rust has this in structs and enums,
@@ -27,6 +29,8 @@ fn main() {
     };
 
     screen.run();
+
+    blog_example();
 }
 
 pub trait Draw {
@@ -76,4 +80,17 @@ impl Draw for SelectBox {
     fn draw(&self) {
         // code to draw the select box
     }
+}
+
+fn blog_example() {
+    let mut post = Post::new();
+
+    post.add_text("I ate a salad for lunch today");
+    assert_eq!("", post.content());
+
+    post.request_review();
+    assert_eq!("", post.content());
+
+    post.approve();
+    assert_eq!("I ate a salad for lunch today", post.content());
 }
