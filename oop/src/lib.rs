@@ -14,7 +14,8 @@ impl Post {
     }
 
     pub fn add_text(&mut self, text: &str) {
-        self.content.push_str(text);
+        self.content
+            .push_str(self.state.as_ref().unwrap().add_text(text));
     }
 
     pub fn content(&self) -> &str {
@@ -48,27 +49,47 @@ trait State {
     fn content<'a>(&self, post: &'a Post) -> &'a str {
         ""
     }
+    fn reject<'a>(self: Box<Self>) -> Box<dyn State>;
+    fn add_text<'a>(&self, text: &'a str) -> &'a str {
+        ""
+    }
 }
 
 struct Draft {}
 
 impl State for Draft {
     fn request_review(self: Box<Self>) -> Box<dyn State> {
-        Box::new(PendingReview {})
+        Box::new(PendingReview { approvals: 0 })
     }
     fn approve(self: Box<Self>) -> Box<dyn State> {
         self
     }
+    fn reject(self: Box<Self>) -> Box<dyn State> {
+        self
+    }
+    fn add_text<'a>(&self, text: &'a str) -> &'a str {
+        text
+    }
 }
 
-struct PendingReview {}
+struct PendingReview {
+    approvals: i32,
+}
 
 impl State for PendingReview {
     fn request_review(self: Box<Self>) -> Box<dyn State> {
         self
     }
-    fn approve(self: Box<Self>) -> Box<dyn State> {
-        Box::new(Published {})
+    fn approve(mut self: Box<Self>) -> Box<dyn State> {
+        self.approvals += 1;
+        if self.approvals >= 2 {
+            Box::new(Published {})
+        } else {
+            self
+        }
+    }
+    fn reject(self: Box<Self>) -> Box<dyn State> {
+        Box::new(Draft {})
     }
 }
 
@@ -84,4 +105,10 @@ impl State for Published {
     fn content<'a>(&self, post: &'a Post) -> &'a str {
         &post.content
     }
+    fn reject(self: Box<Self>) -> Box<dyn State> {
+        self
+    }
 }
+
+// If another state were to be added, then the transition between certain states
+// would have to be redone.
