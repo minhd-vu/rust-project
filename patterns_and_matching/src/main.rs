@@ -1,5 +1,8 @@
 fn main() {
     if_let_example();
+    while_let_example();
+    for_example();
+    print_coordinates(&(0, 0))
 }
 
 fn if_let_example() {
@@ -26,4 +29,37 @@ fn if_let_example() {
     } else {
         println!("Using blue as the background color");
     }
+}
+
+fn while_let_example() {
+    let mut stack = Vec::new();
+    stack.push(1);
+    stack.push(2);
+    stack.push(3);
+
+    // The while let allows the while loop to run as the pattern continues to
+    // match.
+    while let Some(top) = stack.pop() {
+        println!("{}", top);
+    }
+}
+
+fn for_example() {
+    let v = vec!['a', 'b', 'c'];
+    // The keyword that follows the for is a pattern. Here, the pattern is for x
+    // in y. Using the enumerate iterator here allows us to access the indexes
+    // by destructuring the tuple.
+    for (index, value) in v.iter().enumerate() {
+        println!("{} is at index {}", value, index);
+    }
+}
+
+fn let_example() {
+    // We use a pattern with let to destructure a tuple.
+    let (x, y, z) = (1, 2, 3);
+}
+
+// Here, we pattern match the parameters in the function by destructuring a tuple.
+fn print_coordinates(&(x, y): &(i32, i32)) {
+    println!("Current location: ({}, {})", x, y);
 }
