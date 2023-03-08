@@ -63,3 +63,19 @@ fn let_example() {
 fn print_coordinates(&(x, y): &(i32, i32)) {
     println!("Current location: ({}, {})", x, y);
 }
+
+fn refutability_example() {
+    // This is an irrefutable statement because x will match anything.
+    let x = 5;
+    let option: Option<&str> = None;
+
+    // This is a refutable statement because if the value of color is not some,
+    // then the pattern will fail to match.
+    // let Some(some) = option;
+    // To use the refutable pattern we must handle the case in which it is none.
+    // We can do this with an if statement.
+    if let Some(some) = option {
+        // Therefore, match arms must be refutable patterns, and something like
+        // if let x = 5 {} would be useless.
+    }
+}
