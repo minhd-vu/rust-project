@@ -79,3 +79,58 @@ fn refutability_example() {
         // if let x = 5 {} would be useless.
     }
 }
+
+fn matching_literals() {
+    let x = 1;
+
+    match x {
+        // You can match multiple patterns with the | syntax.
+        1 | 2 => println!("one or two"),
+        3 => println!("three"),
+        // To match an inclusive range.
+        4..=10 => println!("four to ten"),
+        _ => println!("anything"),
+    }
+}
+
+fn matching_named_variables() {
+    let x = Some(5);
+    let y = 10;
+
+    match x {
+        // This first arm doesn't match because the value of x is 5.
+        Some(50) => println!("Got 50"),
+        // The next arm matches all values and stores the value in y. This y
+        // shadows the other y in this scope.
+        Some(y) => println!("Matched, y = {y}"),
+        // If x is None, then this arm would match.
+        _ => println!("Default case, x = {:?}", x),
+    }
+
+    println!("at the end: x = {:?}, y = {y}", x);
+}
+
+struct Point {
+    x: i32,
+    y: i32,
+}
+
+fn destructure_structs() {
+    let p = Point { x: 0, y: 7 };
+
+    // Create two variables a and b from Point p.
+    let Point { x: a, y: b } = p;
+    // You can also use the direct struct field names.
+    let Point { x, y } = p;
+    assert_eq!(0, a);
+    assert_eq!(7, b);
+
+    // Matching also works with destructuring.
+    match p {
+        Point { x, y: 0 } => println!("On the x axis at {x}"),
+        Point { x: 0, y } => println!("On the y axis at {y}"),
+        Point { x, y } => {
+            println!("On neither axis: ({x}, {y})");
+        }
+    }
+}
