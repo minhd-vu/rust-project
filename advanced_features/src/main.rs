@@ -197,3 +197,27 @@ impl fmt::Display for Wrapper {
         write!(f, "[{}]", self.0.join(", "))
     }
 }
+
+// This is a type alias or synonym. Using this method, we don't get the type
+// checking benefits from the newtype pattern like in Meters and Millimeters.
+// This use case is good for reducing repetition of writing long types. Result<T>
+// is one such alias that means Result<T, Error>.
+type Kilometers = i32;
+
+type Thunk = Box<dyn Fn() + Send + 'static>;
+
+fn takes_and_returns_long_type(f: Thunk) -> Thunk {
+    Box::new(|| println!("hi"))
+}
+
+// str is a dynamically sized type, which means the size of it must be evaluated
+// at runtime. &str on the other hand stores, two things: the address of the str
+// and its length.
+// let s1: str = "Hello there!";
+// let s2: str = "How's it going?";
+
+// By default, all generic functions work on types that have a known size at
+// compile time, to override this:
+fn generic<T: ?Sized>(t: &T) {
+    // --snip--
+}
