@@ -221,3 +221,15 @@ fn takes_and_returns_long_type(f: Thunk) -> Thunk {
 fn generic<T: ?Sized>(t: &T) {
     // --snip--
 }
+
+fn add_one(x: i32) -> i32 {
+    x + 1
+}
+
+fn do_twice(f: fn(i32) -> i32, arg: i32) -> i32 {
+    f(arg) + f(arg)
+}
+
+fn function_pointers() {
+    let answer = do_twice(add_one, 5);
+}
