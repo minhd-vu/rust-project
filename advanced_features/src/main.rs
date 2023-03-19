@@ -226,10 +226,32 @@ fn add_one(x: i32) -> i32 {
     x + 1
 }
 
+// Use the fn type to pass a function pointer. Because function pointers
+// implement all the traits of a closure, they can be passed in where you would
+// usually expect a closure.
 fn do_twice(f: fn(i32) -> i32, arg: i32) -> i32 {
     f(arg) + f(arg)
 }
 
 fn function_pointers() {
     let answer = do_twice(add_one, 5);
+
+    let list_of_numbers = vec![1, 2, 3];
+    // Here you can either pass a closure or a function pointer to map.
+    let list_of_strings: Vec<String> = list_of_numbers.iter().map(|i| i.to_string()).collect();
+    let list_of_strings: Vec<String> = list_of_numbers.iter().map(ToString::to_string).collect();
+
+    enum Status {
+        Value(u32),
+        Stop,
+    }
+
+    // You can also use enum initializer functions as function pointers.
+    let list_of_statuses: Vec<Status> = (0u32..20).map(Status::Value).collect();
+}
+
+// To return a closure do the following. Notice that we have to use the Box trait
+// because we don't know how large the closure will be.
+fn returns_closure() -> Box<dyn Fn(i32) -> i32> {
+    Box::new(|x| x + 1)
 }
