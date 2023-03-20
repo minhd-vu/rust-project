@@ -255,3 +255,27 @@ fn function_pointers() {
 fn returns_closure() -> Box<dyn Fn(i32) -> i32> {
     Box::new(|x| x + 1)
 }
+
+// One difference between macros and functions is that macros are called at
+// compile time and functions are called at runtime. Macros is code that writes
+// code and can be harder to understand. Furthermore, macros must be defined
+// before they can be called.
+
+// This annotation indicates that this macro should be made available whenever
+// the crate is brought into scope or else the macro cannot be brought into scope.
+#[macro_export]
+// This is a simplified version of the vec! macro. It behaves similarly to a match
+// statement.
+macro_rules! vec {
+    // There is only one pattern in this, so if it does not match, then there will
+    // be an error.
+    ( $( $x:expr ),* ) => {
+        {
+            let mut temp_vec = Vec::new();
+            $(
+                temp_vec.push($x);
+            )*
+            temp_vec
+        }
+    };
+}
