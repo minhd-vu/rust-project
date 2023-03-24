@@ -268,7 +268,10 @@ fn returns_closure() -> Box<dyn Fn(i32) -> i32> {
 // statement.
 macro_rules! vec {
     // There is only one pattern in this, so if it does not match, then there will
-    // be an error.
+    // be an error. The first pattern is denoted with the parenthesis. Then comes
+    // the matching which is $(). The comma that follows the $(), is optional and
+    // the * means that there could be zero or more of the pattern. Inside, the
+    // $x:expr means that it matches any expression and stores it in the value $x.
     ( $( $x:expr ),* ) => {
         {
             let mut temp_vec = Vec::new();
