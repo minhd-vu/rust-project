@@ -282,3 +282,49 @@ macro_rules! vec {
         }
     };
 }
+
+// Here is a trait that we want to make into a macro.
+pub trait HelloMacro {
+    fn hello_macro();
+}
+
+struct Pancakes;
+
+// You can directly implement it like this or we can use a macro to save the user
+// from needing to write out the impl block.
+impl HelloMacro for Pancakes {
+    fn hello_macro() {
+        println!("Hello, Macro! My name is Pancakes!");
+    }
+}
+
+// You have to change the proc-macro in the Cargo.toml to make this work.
+#[proc_macro_derive(HelloMacro)]
+pub fn hello_macro_derive(input: TokenStream) -> TokenStream {
+    // Construct a representation of Rust code as a syntax tree
+    // that we can manipulate. The syn crate parses Rust code from a string to
+    // data structure that operations can be done on. The quote crate turns syn
+    // data structures back into Rust code.
+    let ast = syn::parse(input).unwrap();
+
+    // Build the trait implementation
+    impl_hello_macro(&ast)
+}
+
+fn impl_hello_macro(ast: &syn::DeriveInput) -> TokenStream {
+    let name = &ast.ident; // This will be the name of the struct.
+    let gen = quote! {
+        // This is the code we want to return.
+        impl HelloMacro for #name {
+            fn hello_macro() {
+                // stringify!() will convert anything to a string (which may be an
+                // expression).
+                println!("Hello, Macro! My name is {}!", stringify!(#name));
+            }
+        }
+    };
+    gen.into()
+}
+
+#[derive(HelloMacro)]
+struct Waflles;
