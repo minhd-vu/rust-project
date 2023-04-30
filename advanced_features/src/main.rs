@@ -328,3 +328,21 @@ fn impl_hello_macro(ast: &syn::DeriveInput) -> TokenStream {
 
 #[derive(HelloMacro)]
 struct Waflles;
+
+// Here, route is an attribute macro, because derive macros are limited.
+#[route(GET, "/")]
+fn index() {}
+
+// This is how you define a attribute macro.
+#[proc_macro_attribute]
+pub fn route(attr: TokenStream, item: TokenStream) -> TokenStream {}
+
+fn function_like_macros() {
+    // Function like macros can be more powerful than functions. They can take
+    // an arbitrary amount of arguments.
+    let sql = sql!(SELECT * FROM posts WHERE id=1);
+}
+
+// This is how a function like macros is defined.
+#[proc_macro]
+pub fn sql(input: TokenStream) -> TokenStream {}
