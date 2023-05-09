@@ -1,4 +1,7 @@
-use std::net::TcpListener;
+use std::{
+    io::{BufRead, BufReader},
+    net::{TcpListener, TcpStream},
+};
 
 fn main() {
     // This will listen to incoming tcp connections.
@@ -10,5 +13,19 @@ fn main() {
         let stream = stream.unwrap();
 
         println!("Connection established!");
+        handle_connection(stream);
     }
+}
+
+fn handle_connection(mut stream: TcpStream) {
+    let buf_reader = BufReader::new(&mut stream);
+    // This will collect the lines of request that the browser sends to the server.
+    let http_request: Vec<_> = buf_reader
+        .lines()
+        .map(|result| result.unwrap())
+        // Take lines until there is an empty line.
+        .take_while(|line| !line.is_empty())
+        .collect();
+
+    println!("Request: {:#?}", http_request);
 }
