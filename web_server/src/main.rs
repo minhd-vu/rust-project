@@ -1,4 +1,5 @@
 use std::{
+    fs,
     io::{BufRead, BufReader, Write},
     net::{TcpListener, TcpStream},
 };
@@ -29,7 +30,13 @@ fn handle_connection(mut stream: TcpStream) {
 
     println!("Request: {:#?}", http_request);
 
-    let response = "HTTP/1.1 200 OK\r\n\r\n";
+    // Read in the HTML file and return it as the response.
+    let status_line = "HTTP/1.1 200 OK";
+    let contents = fs::read_to_string("hello.html").unwrap();
+    let length = contents.len();
+
+    let response = format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}");
+
     // Write an OK message back to the client.
     stream.write_all(response.as_bytes()).unwrap();
 }
