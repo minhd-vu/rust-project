@@ -5,10 +5,12 @@ use std::{
     thread,
     time::Duration,
 };
+use web_server::ThreadPool;
 
 fn main() {
     // This will listen to incoming tcp connections.
     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
+    let pool = ThreadPool::new(4);
 
     // The incoming method gives us a stream of incoming connections. These are
     // actually connection attempts.
@@ -16,7 +18,19 @@ fn main() {
         let stream = stream.unwrap();
 
         println!("Connection established!");
-        handle_connection(stream);
+        // This is single threaded.
+        // handle_connection(stream);
+
+        // This would create a new thread to handle each stream. This is problem because there is
+        // no limit and could overload the system.
+        // thread::spawn(|| {
+        //     handle_connection(stream);
+        // });
+
+        // This is using a thread pool to handle requests.
+        pool.execute(|| {
+            handle_connection(stream);
+        });
     }
 }
 
