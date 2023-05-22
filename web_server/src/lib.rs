@@ -1,7 +1,7 @@
 use std::thread;
 
 pub struct ThreadPool {
-    threads: Vec<Worker>,
+    workers: Vec<Worker>,
 }
 pub struct PoolCreationError;
 pub struct Worker {
@@ -20,13 +20,13 @@ impl ThreadPool {
     pub fn new(size: usize) -> ThreadPool {
         assert!(size > 0);
 
-        let mut threads = Vec::with_capacity(size);
+        let mut workers = Vec::with_capacity(size);
 
         for id in 0..size {
-            threads.push(Worker::new(id))
+            workers.push(Worker::new(id))
         }
 
-        ThreadPool { threads }
+        ThreadPool { workers }
     }
 
     /// Create a new ThreadPool.
@@ -39,7 +39,13 @@ impl ThreadPool {
             return Err(PoolCreationError);
         }
 
-        Ok(ThreadPool { threads: vec![] })
+        let mut workers = Vec::with_capacity(size);
+
+        for id in 0..size {
+            workers.push(Worker::new(id))
+        }
+
+        Ok(ThreadPool { workers })
     }
 
     pub fn execute<F>(&self, f: F)
