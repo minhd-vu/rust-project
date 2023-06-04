@@ -12,7 +12,8 @@ pub struct Worker {
     id: usize,
     thread: thread::JoinHandle<()>,
 }
-pub struct Job;
+// This is type alias for the type of a thread.
+type Job = Box<dyn FnOnce() + Send + 'static>;
 
 impl ThreadPool {
     /// Create a new ThreadPool.
@@ -49,18 +50,27 @@ impl ThreadPool {
         Ok(ThreadPool::new(size))
     }
 
-    pub fn execute<F>(&self, f: F)
+    pub fn execute<F>(&self, f: Job)
     where
         // We use the FnOnce for the closure trait because that's what thread::spawn uses.
         F: FnOnce() + Send + 'static,
     {
+        let job = Box::new(f);
+        self.sender.send(job).unwrap();
     }
 }
 
 impl Worker {
     pub fn new(id: usize, receiver: Arc<Mutex<mpsc::Receiver<Job>>>) -> Worker {
-        let thread = thread::spawn(|| {
-            receiver;
+        let thread = thread::spawn(move || loop {
+            // There is no receiver.unlock() method, so we don't use a while here. The unlock is
+            // done implicitly with the lifetime with the lifetime of the receiver. With a while,
+            // it won't unlock the mutex immediately.
+            let job = receiver.lock().unwrap().recv().unwrap();
+
+            println!("Worker {id} got a job; executing.");
+
+            job();
         });
         Worker { id, thread }
     }
