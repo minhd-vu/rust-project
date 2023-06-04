@@ -12,6 +12,7 @@ pub struct Worker {
     id: usize,
     thread: thread::JoinHandle<()>,
 }
+
 // This is type alias for the type of a thread.
 type Job = Box<dyn FnOnce() + Send + 'static>;
 
@@ -50,7 +51,7 @@ impl ThreadPool {
         Ok(ThreadPool::new(size))
     }
 
-    pub fn execute<F>(&self, f: Job)
+    pub fn execute<F>(&self, f: F)
     where
         // We use the FnOnce for the closure trait because that's what thread::spawn uses.
         F: FnOnce() + Send + 'static,
