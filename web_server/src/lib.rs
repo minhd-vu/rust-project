@@ -5,12 +5,12 @@ use std::{
 
 pub struct ThreadPool {
     workers: Vec<Worker>,
-    sender: mpsc::Sender<Job>,
+    sender: Option<mpsc::Sender<Job>>,
 }
 pub struct PoolCreationError;
 pub struct Worker {
     id: usize,
-    thread: thread::JoinHandle<()>,
+    thread: Option<thread::JoinHandle<()>>,
 }
 
 // This is type alias for the type of a thread.
@@ -35,7 +35,10 @@ impl ThreadPool {
             workers.push(Worker::new(id, Arc::clone(&receiver)))
         }
 
-        ThreadPool { workers, sender }
+        ThreadPool {
+            workers,
+            sender: Some(sender),
+        }
     }
 
     /// Create a new ThreadPool.
@@ -57,7 +60,20 @@ impl ThreadPool {
         F: FnOnce() + Send + 'static,
     {
         let job = Box::new(f);
-        self.sender.send(job).unwrap();
+
+        self.sender.as_ref().unwrap().send(job).unwrap();
+    }
+}
+
+impl Drop for ThreadPool {
+    fn drop(&mut self) {
+        for worker in &mut self.workers {
+            println!("Shutting down worker {}", worker.id);
+
+            if let Some(thread) = worker.thread.take() {
+                thread.join().unwrap();
+            }
+        }
     }
 }
 
@@ -67,12 +83,29 @@ impl Worker {
             // There is no receiver.unlock() method, so we don't use a while here. The unlock is
             // done implicitly with the lifetime with the lifetime of the receiver. With a while,
             // it won't unlock the mutex immediately.
-            let job = receiver.lock().unwrap().recv().unwrap();
+            // let job = receiver.lock().unwrap().recv().unwrap();
+            //
+            // println!("Worker {id} got a job; executing.");
+            //
+            // job();
 
-            println!("Worker {id} got a job; executing.");
+            let message = receiver.lock().unwrap().recv();
 
-            job();
+            match message {
+                Ok(job) => {
+                    println!("Worker {id} got a job; executing.");
+
+                    job();
+                }
+                Err(_) => {
+                    println!("Worker {id} disconnected; shutting down.");
+                    break;
+                }
+            }
         });
-        Worker { id, thread }
+        Worker {
+            id,
+            thread: Some(thread),
+        }
     }
 }

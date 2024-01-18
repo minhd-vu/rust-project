@@ -14,7 +14,7 @@ fn main() {
 
     // The incoming method gives us a stream of incoming connections. These are
     // actually connection attempts.
-    for stream in listener.incoming() {
+    for stream in listener.incoming().take(2) {
         let stream = stream.unwrap();
 
         println!("Connection established!");
